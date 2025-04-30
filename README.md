@@ -31,3 +31,10 @@ npm run cy:open-local # open mode
 npm run cy:run-local  # run mode
 npm run cy:run-local-fast  # no video or screen shots
 ```
+
+
+### productivity tools:
+
+[return types](https://www.youtube.com/watch?v=pPaQo1Cgvd0),
+[rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+
