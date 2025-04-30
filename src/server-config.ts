@@ -4,7 +4,7 @@ import express, { json, Response } from 'express'
 const server = express()
 server.use(cors(
     {
-        origin: 'https://localhost:3000',
+        origin: 'http://localhost:3000',
     }
 ))
 
