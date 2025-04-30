@@ -17,6 +17,6 @@ describe('CRUD movie', () => {
 
   it('should', () => {
     cy.log(token)
-    // cy.wrap(token).should('be.a', 'string')
+    cy.wrap(token).should('be.a', 'string')
   })
 })
