@@ -6,7 +6,7 @@
     "./.eslintrc.js",
     "cypress",
     "./cypress/index.d.ts",
-    "prisma",
+    "prisma"
   ],
   "exclude": ["node_modules", "coverage", "dist", "**/*.*test.ts*"],
   "compilerOptions": {
