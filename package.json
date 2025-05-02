@@ -19,9 +19,12 @@
     "test:watch": "jest --watch --config jest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.jest.json",
     "lint": "eslint --ext=.js,.ts,.tsx --fix",
-     "generate:openapi": "tsx src/api-docs/openapi-writer.ts"
+    "generate:openapi": "tsx src/api-docs/openapi-writer.ts",
+    "optic:lint": "optic lint src/api-docs/openapi.yml",
+    "optic:diff": "optic diff src/api-docs/openapi.yml --check --web --base main"
   },
   "devDependencies": {
+    "@useoptic/optic": "1.0.4",
     "@bahmutov/cy-api": "2.2.8",
     "@bahmutov/cypress-esbuild-preprocessor": "2.2.4",
     "@cypress/skip-test": "2.6.1",
