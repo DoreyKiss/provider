@@ -18,9 +18,13 @@
     "test": "jest --detectOpenHandles --verbose --silent --config jest.config.ts",
     "test:watch": "jest --watch --config jest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.jest.json",
-    "lint": "eslint --ext=.js,.ts,.tsx --fix"
+    "lint": "eslint --ext=.js,.ts,.tsx --fix",
+    "generate:openapi": "tsx src/api-docs/openapi-writer.ts",
+    "optic:lint": "optic lint src/api-docs/openapi.yml",
+    "optic:diff": "optic diff src/api-docs/openapi.yml --check --web --base main"
   },
   "devDependencies": {
+    "@useoptic/optic": "1.0.4",
     "@bahmutov/cy-api": "2.2.8",
     "@bahmutov/cypress-esbuild-preprocessor": "2.2.4",
     "@cypress/skip-test": "2.6.1",
@@ -62,8 +66,10 @@
   },
   "dependencies": {
     "@prisma/client": "5.21.1",
+    "@asteasolutions/zod-to-openapi": "7.2.0",
     "cors": "2.8.5",
     "express": "4.21.1",
-    "prisma": "5.21.1"
+    "prisma": "5.21.1",
+    "zod": "3.22.4"
   }
 }
