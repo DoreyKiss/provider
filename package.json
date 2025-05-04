@@ -24,6 +24,7 @@
     "optic:diff": "optic diff src/api-docs/openapi.yml --check --web --base main"
   },
   "devDependencies": {
+    "jest-mock-extended": "^4.0.0-beta1",
     "@useoptic/optic": "1.0.4",
     "@bahmutov/cy-api": "2.2.8",
     "@bahmutov/cypress-esbuild-preprocessor": "2.2.4",
