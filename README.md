@@ -1,6 +1,7 @@
-# Cy, Node template
+# Provider Part of udemy Course "Epic Test Arch. - test everything, everywhere all at once"
 
-A template with tooling, configuration and best practices for a Cy api e2e testing in a Node.js project.
+[link to course](https://www.udemy.com/course/epic-test-arch-test-everything-everywhere-all-at-once)
+
 
 ## Setup
 
@@ -30,11 +31,18 @@ npm run mock:server # starts the mock backend/provider server
 npm run cy:open-local # open mode
 npm run cy:run-local  # run mode
 npm run cy:run-local-fast  # no video or screen shots
+
+npm start # start server
+
+npm run generate:openapi 
+npm run optic:lint # lint atlassian optic  which is used for open api versioning
+npm optic:diff # see diff of open api versions
 ```
 
 
 ### productivity tools:
 
-[return types](https://www.youtube.com/watch?v=pPaQo1Cgvd0),
-[rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+- [return types](https://www.youtube.com/watch?v=pPaQo1Cgvd0),
+- [rest client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+- [spell checking](https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker).
 
