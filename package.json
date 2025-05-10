@@ -28,7 +28,6 @@
     "record:provider:deployment": ". ./scripts/record-provider-deployment.sh"
   },
   "devDependencies": {
-    "jest-mock-extended": "4.0.0-beta1",
     "@useoptic/optic": "1.0.6",
     "@bahmutov/cy-api": "2.2.8",
     "@bahmutov/cypress-esbuild-preprocessor": "2.2.4",
@@ -75,6 +74,9 @@
   "dependencies": {
     "@prisma/client": "5.22.0",
     "@asteasolutions/zod-to-openapi": "7.3.0",
+    "@pact-foundation/pact": "15.0.1",
+    "@pact-foundation/pact-cli": "16.0.7",
+    "start-server-and-test": "2.0.8",
     "cors": "2.8.5",
     "express": "4.21.2",
     "prisma": "5.22.0",
