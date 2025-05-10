@@ -45,7 +45,7 @@
     "cy-retryable-before": "1.0.3",
     "cy-spok": "1.6.2",
     "cypress": "14.3.3",
-    "cypress-ajv-schema-validator": "1.4.0",
+    "cypress-ajv-schema-validator": "2.0.1",
     "cypress-data-session": "2.8.6",
     "cypress-map": "1.47.0",
     "cypress-recurse": "1.35.3",
