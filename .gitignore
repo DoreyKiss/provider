@@ -33,3 +33,4 @@ prisma/dev.db-journal
 prisma/dev.db
 prisma/dev.db-journal
 scripts/one-time-scripts/create-github-issue-test1.sh
+scripts/one-time-scripts/create-pact-webhook-real.sh
