@@ -1,12 +1,12 @@
 import type {
-    MessageProviders,
-    MessageStateHandlers,
-    PactMessageProviderOptions,
-    VerifierOptions
+  MessageProviders,
+  MessageStateHandlers,
+  PactMessageProviderOptions,
+  VerifierOptions
 } from '@pact-foundation/pact'
 import type {
-    ProxyOptions,
-    StateHandlers
+  ProxyOptions,
+  StateHandlers
 } from '@pact-foundation/pact/src/dsl/verifier/proxy/types'
 import { noOpRequestFilter } from './pact-request-filter'
 import { handlePactBrokerUrlAndSelectors } from './handle-url-and-selectors'
@@ -60,86 +60,86 @@ import { handlePactBrokerUrlAndSelectors } from './handle-url-and-selectors'
  * })
  */
 export function buildVerifierOptions({
+  provider,
+  port,
+  logLevel = 'info', // 'debug' is also useful
+  stateHandlers,
+  beforeEach,
+  afterEach,
+  includeMainAndDeployed,
+  consumer,
+  enablePending,
+  requestFilter = noOpRequestFilter,
+  publishVerificationResult = true,
+  pactBrokerToken = process.env.PACT_BROKER_TOKEN,
+  providerVersion = process.env.GITHUB_SHA,
+  providerVersionBranch = process.env.GITHUB_BRANCH,
+  pactBrokerUrl = process.env.PACT_BROKER_BASE_URL,
+  pactPayloadUrl = process.env.PACT_PAYLOAD_URL
+}: {
+  provider: string
+  port: string
+  logLevel?: ProxyOptions['logLevel']
+  stateHandlers?: StateHandlers & MessageStateHandlers
+  beforeEach?: ProxyOptions['beforeEach']
+  afterEach?: ProxyOptions['afterEach']
+  includeMainAndDeployed: boolean
+  consumer?: string
+  enablePending?: boolean
+  requestFilter?: ProxyOptions['requestFilter']
+  publishVerificationResult?: boolean
+  pactBrokerToken?: string
+  providerVersion?: string
+  providerVersionBranch?: string
+  pactBrokerUrl?: string
+  pactPayloadUrl?: string
+}): VerifierOptions {
+  console.table({
+    Provider: provider,
+    Port: port,
+    'Log Level': logLevel,
+    'State Handlers': stateHandlers ? 'Provided' : 'Not Provided',
+    'Include Main and Deployed': includeMainAndDeployed,
+    Consumer: consumer || 'All Consumers',
+    PACT_BREAKING_CHANGE: process.env.PACT_BREAKING_CHANGE,
+    PACT_BROKER_TOKEN: pactBrokerToken ? 'Provided' : 'Not Provided',
+    'Provider Version': providerVersion,
+    'Provider Version Branch': providerVersionBranch,
+    'Pact Broker URL': pactBrokerUrl,
+    'Pact Payload URL': pactPayloadUrl || 'Not Provided',
+    'Enable Pending': enablePending,
+    'Request Filter':
+      requestFilter === noOpRequestFilter
+        ? 'Default (No-Op)'
+        : 'Custom Provided'
+  })
+
+  const options: VerifierOptions = {
     provider,
-    port,
-    logLevel = 'info', // 'debug' is also useful
+    logLevel,
     stateHandlers,
     beforeEach,
     afterEach,
-    includeMainAndDeployed,
+    requestFilter,
+    providerBaseUrl: `http://localhost:${port}`,
+    publishVerificationResult,
+    pactBrokerToken,
+    providerVersion,
+    providerVersionBranch,
+    enablePending // use this if breaking changes from a consumer somehow got in main, and the provider cannot release (allow blasphemy!)
+  }
+
+  // When the CI triggers the provider tests, we need to use the PACT_PAYLOAD_URL
+  // To use the PACT_PAYLOAD_URL, we need to update the provider options to use this URL instead.
+  handlePactBrokerUrlAndSelectors({
+    pactPayloadUrl,
+    pactBrokerUrl,
     consumer,
-    enablePending,
-    requestFilter = noOpRequestFilter,
-    publishVerificationResult = true,
-    pactBrokerToken = process.env.PACT_BROKER_TOKEN,
-    providerVersion = process.env.GITHUB_SHA,
-    providerVersionBranch = process.env.GITHUB_BRANCH,
-    pactBrokerUrl = process.env.PACT_BROKER_BASE_URL,
-    pactPayloadUrl = process.env.PACT_PAYLOAD_URL
-}: {
-    provider: string
-    port: string
-    logLevel?: ProxyOptions['logLevel']
-    stateHandlers?: StateHandlers & MessageStateHandlers
-    beforeEach?: ProxyOptions['beforeEach']
-    afterEach?: ProxyOptions['afterEach']
-    includeMainAndDeployed: boolean
-    consumer?: string
-    enablePending?: boolean
-    requestFilter?: ProxyOptions['requestFilter']
-    publishVerificationResult?: boolean
-    pactBrokerToken?: string
-    providerVersion?: string
-    providerVersionBranch?: string
-    pactBrokerUrl?: string
-    pactPayloadUrl?: string
-}): VerifierOptions {
-    console.table({
-        Provider: provider,
-        Port: port,
-        'Log Level': logLevel,
-        'State Handlers': stateHandlers ? 'Provided' : 'Not Provided',
-        'Include Main and Deployed': includeMainAndDeployed,
-        Consumer: consumer || 'All Consumers',
-        PACT_BREAKING_CHANGE: process.env.PACT_BREAKING_CHANGE,
-        PACT_BROKER_TOKEN: pactBrokerToken ? 'Provided' : 'Not Provided',
-        'Provider Version': providerVersion,
-        'Provider Version Branch': providerVersionBranch,
-        'Pact Broker URL': pactBrokerUrl,
-        'Pact Payload URL': pactPayloadUrl || 'Not Provided',
-        'Enable Pending': enablePending,
-        'Request Filter':
-            requestFilter === noOpRequestFilter
-                ? 'Default (No-Op)'
-                : 'Custom Provided'
-    })
+    includeMainAndDeployed,
+    options
+  })
 
-    const options: VerifierOptions = {
-        provider,
-        logLevel,
-        stateHandlers,
-        beforeEach,
-        afterEach,
-        requestFilter,
-        providerBaseUrl: `http://localhost:${port}`,
-        publishVerificationResult,
-        pactBrokerToken,
-        providerVersion,
-        providerVersionBranch,
-        enablePending // use this if breaking changes from a consumer somehow got in main, and the provider cannot release (allow blasphemy!)
-    }
-
-    // When the CI triggers the provider tests, we need to use the PACT_PAYLOAD_URL
-    // To use the PACT_PAYLOAD_URL, we need to update the provider options to use this URL instead.
-    handlePactBrokerUrlAndSelectors({
-        pactPayloadUrl,
-        pactBrokerUrl,
-        consumer,
-        includeMainAndDeployed,
-        options
-    })
-
-    return options
+  return options
 }
 
 /**
@@ -171,64 +171,64 @@ export function buildVerifierOptions({
  * })
  */
 export function buildMessageVerifierOptions({
+  provider,
+  messageProviders,
+  includeMainAndDeployed,
+  consumer,
+  enablePending = false,
+  logLevel = 'info',
+  publishVerificationResult = true,
+  pactBrokerToken = process.env.PACT_BROKER_TOKEN,
+  providerVersion = process.env.GITHUB_SHA,
+  providerVersionBranch = process.env.GITHUB_BRANCH,
+  pactBrokerUrl = process.env.PACT_BROKER_BASE_URL,
+  pactPayloadUrl = process.env.PACT_PAYLOAD_URL
+}: {
+  provider: string
+  messageProviders: MessageProviders
+  includeMainAndDeployed: boolean
+  consumer?: string
+  enablePending?: boolean
+  logLevel?: ProxyOptions['logLevel']
+  publishVerificationResult?: boolean
+  pactBrokerToken?: string
+  providerVersion?: string
+  providerVersionBranch?: string
+  pactBrokerUrl?: string
+  pactPayloadUrl?: string
+}): PactMessageProviderOptions {
+  console.table({
+    Provider: provider,
+    'Message Handlers': messageProviders ? 'Provided' : 'Not Provided',
+    'Include Main and Deployed': includeMainAndDeployed,
+    Consumer: consumer || 'All Consumers',
+    PACT_BROKER_TOKEN: pactBrokerToken ? 'Provided' : 'Not Provided',
+    'Provider Version': providerVersion,
+    'Provider Version Branch': providerVersionBranch,
+    'Pact Broker URL': pactBrokerUrl || 'Not Provided',
+    'Pact Payload URL': pactPayloadUrl || 'Not Provided',
+    'Enable Pending': enablePending,
+    'Log Level': logLevel
+  })
+
+  const options: PactMessageProviderOptions = {
     provider,
     messageProviders,
-    includeMainAndDeployed,
+    logLevel,
+    publishVerificationResult,
+    pactBrokerToken,
+    providerVersion,
+    providerVersionBranch,
+    enablePending // use this if breaking changes from a consumer somehow got in main, and the provider cannot release (allow blasphemy!)
+  }
+
+  handlePactBrokerUrlAndSelectors({
+    pactPayloadUrl,
+    pactBrokerUrl,
     consumer,
-    enablePending = false,
-    logLevel = 'info',
-    publishVerificationResult = true,
-    pactBrokerToken = process.env.PACT_BROKER_TOKEN,
-    providerVersion = process.env.GITHUB_SHA,
-    providerVersionBranch = process.env.GITHUB_BRANCH,
-    pactBrokerUrl = process.env.PACT_BROKER_BASE_URL,
-    pactPayloadUrl = process.env.PACT_PAYLOAD_URL
-}: {
-    provider: string
-    messageProviders: MessageProviders
-    includeMainAndDeployed: boolean
-    consumer?: string
-    enablePending?: boolean
-    logLevel?: ProxyOptions['logLevel']
-    publishVerificationResult?: boolean
-    pactBrokerToken?: string
-    providerVersion?: string
-    providerVersionBranch?: string
-    pactBrokerUrl?: string
-    pactPayloadUrl?: string
-}): PactMessageProviderOptions {
-    console.table({
-        Provider: provider,
-        'Message Handlers': messageProviders ? 'Provided' : 'Not Provided',
-        'Include Main and Deployed': includeMainAndDeployed,
-        Consumer: consumer || 'All Consumers',
-        PACT_BROKER_TOKEN: pactBrokerToken ? 'Provided' : 'Not Provided',
-        'Provider Version': providerVersion,
-        'Provider Version Branch': providerVersionBranch,
-        'Pact Broker URL': pactBrokerUrl || 'Not Provided',
-        'Pact Payload URL': pactPayloadUrl || 'Not Provided',
-        'Enable Pending': enablePending,
-        'Log Level': logLevel
-    })
+    includeMainAndDeployed,
+    options
+  })
 
-    const options: PactMessageProviderOptions = {
-        provider,
-        messageProviders,
-        logLevel,
-        publishVerificationResult,
-        pactBrokerToken,
-        providerVersion,
-        providerVersionBranch,
-        enablePending // use this if breaking changes from a consumer somehow got in main, and the provider cannot release (allow blasphemy!)
-    }
-
-    handlePactBrokerUrlAndSelectors({
-        pactPayloadUrl,
-        pactBrokerUrl,
-        consumer,
-        includeMainAndDeployed,
-        options
-    })
-
-    return options
+  return options
 }

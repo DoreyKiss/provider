@@ -1,6 +1,6 @@
 import type {
-    PactMessageProviderOptions,
-    VerifierOptions
+  PactMessageProviderOptions,
+  VerifierOptions
 } from '@pact-foundation/pact'
 import type { ConsumerVersionSelector } from '@pact-foundation/pact-core'
 
@@ -16,38 +16,38 @@ import type { ConsumerVersionSelector } from '@pact-foundation/pact-core'
  * @param options - The options object to update with Pact URL or Pact Broker information.
  */
 export function handlePactBrokerUrlAndSelectors({
-    pactPayloadUrl,
+  pactPayloadUrl,
+  pactBrokerUrl,
+  consumer,
+  includeMainAndDeployed,
+  options
+}: {
+  pactPayloadUrl?: string
+  pactBrokerUrl?: string
+  consumer?: string
+  includeMainAndDeployed: boolean
+  options: PactMessageProviderOptions | VerifierOptions
+}) {
+  // If pactPayloadUrl is provided, attempt to use it
+  if (pactPayloadUrl) {
+    const usedPayloadUrl = processPactPayloadUrl(
+      pactPayloadUrl,
+      consumer,
+      options
+    )
+    if (usedPayloadUrl) {
+      return // Successfully used the Pact payload URL, no need to proceed further
+    }
+    // If not used, continue to set up options using the Pact Broker URL and selectors
+  }
+
+  // Use the Pact Broker URL and consumer version selectors
+  usePactBrokerUrlAndSelectors(
     pactBrokerUrl,
     consumer,
     includeMainAndDeployed,
     options
-}: {
-    pactPayloadUrl?: string
-    pactBrokerUrl?: string
-    consumer?: string
-    includeMainAndDeployed: boolean
-    options: PactMessageProviderOptions | VerifierOptions
-}) {
-    // If pactPayloadUrl is provided, attempt to use it
-    if (pactPayloadUrl) {
-        const usedPayloadUrl = processPactPayloadUrl(
-            pactPayloadUrl,
-            consumer,
-            options
-        )
-        if (usedPayloadUrl) {
-            return // Successfully used the Pact payload URL, no need to proceed further
-        }
-        // If not used, continue to set up options using the Pact Broker URL and selectors
-    }
-
-    // Use the Pact Broker URL and consumer version selectors
-    usePactBrokerUrlAndSelectors(
-        pactBrokerUrl,
-        consumer,
-        includeMainAndDeployed,
-        options
-    )
+  )
 }
 
 /**
@@ -59,41 +59,41 @@ export function handlePactBrokerUrlAndSelectors({
  * @returns `true` if the Pact payload URL was used; otherwise, `false`.
  */
 function processPactPayloadUrl(
-    pactPayloadUrl: string,
-    consumer: string | undefined,
-    options: PactMessageProviderOptions | VerifierOptions
+  pactPayloadUrl: string,
+  consumer: string | undefined,
+  options: PactMessageProviderOptions | VerifierOptions
 ): boolean {
-    console.log(`Pact payload URL provided: ${pactPayloadUrl}`)
+  console.log(`Pact payload URL provided: ${pactPayloadUrl}`)
 
-    const parsed = parseProviderAndConsumerFromUrl(pactPayloadUrl)
+  const parsed = parseProviderAndConsumerFromUrl(pactPayloadUrl)
 
-    // If we got the provider and consumer names from the URL
-    if (parsed) {
-        const { provider: pactUrlProvider, consumer: pactUrlConsumer } = parsed
-        console.log(`Pact URL Provider: ${pactUrlProvider}`)
-        console.log(`Pact URL Consumer: ${pactUrlConsumer}`)
+  // If we got the provider and consumer names from the URL
+  if (parsed) {
+    const { provider: pactUrlProvider, consumer: pactUrlConsumer } = parsed
+    console.log(`Pact URL Provider: ${pactUrlProvider}`)
+    console.log(`Pact URL Consumer: ${pactUrlConsumer}`)
 
-        // Compare the provider and consumer names with the intended/provided provider and consumer
-        const providerMatches = options.provider === pactUrlProvider
-        // If no consumer is provided, ignore the consumer name, allowing all consumers to match.
-        // Otherwise, verify only the specified consumer.
-        const consumerMatches = !consumer || consumer === pactUrlConsumer
+    // Compare the provider and consumer names with the intended/provided provider and consumer
+    const providerMatches = options.provider === pactUrlProvider
+    // If no consumer is provided, ignore the consumer name, allowing all consumers to match.
+    // Otherwise, verify only the specified consumer.
+    const consumerMatches = !consumer || consumer === pactUrlConsumer
 
-        if (providerMatches && consumerMatches) {
-            usePactPayloadUrl(pactPayloadUrl, options)
-            return true // Indicate that the Pact payload URL was used
-        } else {
-            console.log(
-                `PACT_PAYLOAD_URL does not match the provider (${options.provider}) and consumer (${consumer || 'all'}), ignoring it`
-            )
-        }
+    if (providerMatches && consumerMatches) {
+      usePactPayloadUrl(pactPayloadUrl, options)
+      return true // Indicate that the Pact payload URL was used
     } else {
-        console.log(
-            'Could not parse provider and consumer from PACT_PAYLOAD_URL, ignoring it'
-        )
+      console.log(
+        `PACT_PAYLOAD_URL does not match the provider (${options.provider}) and consumer (${consumer || 'all'}), ignoring it`
+      )
     }
+  } else {
+    console.log(
+      'Could not parse provider and consumer from PACT_PAYLOAD_URL, ignoring it'
+    )
+  }
 
-    return false // Indicate that the Pact payload URL was not used
+  return false // Indicate that the Pact payload URL was not used
 }
 
 /**
@@ -102,20 +102,20 @@ function processPactPayloadUrl(
  * @returns An object containing the provider and consumer names if parsing is successful; otherwise, null.
  * */
 function parseProviderAndConsumerFromUrl(
-    pactPayloadUrl: string
+  pactPayloadUrl: string
 ): { provider: string; consumer: string } | null {
-    // match url pattern: /pacts/provider/{provider_name}/consumer/{consumer_name}/
-    // with 2 capture groups: provider_name and consumer_name
-    const regex = /\/pacts\/provider\/([^/]+)\/consumer\/([^/]+)\//
-    const match = regex.exec(pactPayloadUrl)
+  // match url pattern: /pacts/provider/{provider_name}/consumer/{consumer_name}/
+  // with 2 capture groups: provider_name and consumer_name
+  const regex = /\/pacts\/provider\/([^/]+)\/consumer\/([^/]+)\//
+  const match = regex.exec(pactPayloadUrl)
 
-    if (match) {
-        const provider = decodeURIComponent(match[1] as string)
-        const consumer = decodeURIComponent(match[2] as string)
-        return { provider, consumer }
-    }
+  if (match) {
+    const provider = decodeURIComponent(match[1] as string)
+    const consumer = decodeURIComponent(match[2] as string)
+    return { provider, consumer }
+  }
 
-    return null
+  return null
 }
 
 /**
@@ -125,17 +125,17 @@ function parseProviderAndConsumerFromUrl(
  * @param options - The verifier options to update.
  */
 function usePactPayloadUrl(
-    pactPayloadUrl: string,
-    options: PactMessageProviderOptions | VerifierOptions
+  pactPayloadUrl: string,
+  options: PactMessageProviderOptions | VerifierOptions
 ) {
-    console.log(
-        'PACT_PAYLOAD_URL matches the provider and consumer, using it for verification'
-    )
-    options.pactUrls = [pactPayloadUrl]
+  console.log(
+    'PACT_PAYLOAD_URL matches the provider and consumer, using it for verification'
+  )
+  options.pactUrls = [pactPayloadUrl]
 
-    // remove pactBrokerUrl and consumerVersionSelectors if set
-    delete options.pactBrokerUrl
-    delete options.consumerVersionSelectors
+  // remove pactBrokerUrl and consumerVersionSelectors if set
+  delete options.pactBrokerUrl
+  delete options.consumerVersionSelectors
 }
 
 /**
@@ -147,38 +147,38 @@ function usePactPayloadUrl(
  * @param options - The verifier options to update.
  */
 function usePactBrokerUrlAndSelectors(
-    pactBrokerUrl: string | undefined,
-    consumer: string | undefined,
-    includeMainAndDeployed: boolean,
-    options: PactMessageProviderOptions | VerifierOptions
+  pactBrokerUrl: string | undefined,
+  consumer: string | undefined,
+  includeMainAndDeployed: boolean,
+  options: PactMessageProviderOptions | VerifierOptions
 ) {
-    if (!pactBrokerUrl) {
-        throw new Error('PACT_BROKER_BASE_URL is required but not set.')
-    }
+  if (!pactBrokerUrl) {
+    throw new Error('PACT_BROKER_BASE_URL is required but not set.')
+  }
 
-    console.log(`Using Pact Broker Base URL: ${pactBrokerUrl}`)
+  console.log(`Using Pact Broker Base URL: ${pactBrokerUrl}`)
 
-    options.pactBrokerUrl = pactBrokerUrl
-    options.consumerVersionSelectors = buildConsumerVersionSelectors(
-        consumer,
-        includeMainAndDeployed
+  options.pactBrokerUrl = pactBrokerUrl
+  options.consumerVersionSelectors = buildConsumerVersionSelectors(
+    consumer,
+    includeMainAndDeployed
+  )
+
+  if (consumer) {
+    console.log(`Running verification for consumer: ${consumer}`)
+  } else {
+    console.log('Running verification for all consumers')
+  }
+
+  if (includeMainAndDeployed) {
+    console.log(
+      'Including main branch and deployedOrReleased in the verification'
     )
-
-    if (consumer) {
-        console.log(`Running verification for consumer: ${consumer}`)
-    } else {
-        console.log('Running verification for all consumers')
-    }
-
-    if (includeMainAndDeployed) {
-        console.log(
-            'Including main branch and deployedOrReleased in the verification'
-        )
-    } else {
-        console.log(
-            'Only running the matching branch, this is useful when introducing breaking changes'
-        )
-    }
+  } else {
+    console.log(
+      'Only running the matching branch, this is useful when introducing breaking changes'
+    )
+  }
 }
 
 /**
@@ -231,28 +231,28 @@ function usePactBrokerUrlAndSelectors(
  * @see https://docs.pact.io/pact_broker/advanced_topics/consumer_version_selectors
  */
 function buildConsumerVersionSelectors(
-    consumer: string | undefined,
-    includeMainAndDeployed = true
+  consumer: string | undefined,
+  includeMainAndDeployed = true
 ): ConsumerVersionSelector[] {
-    // Create the base selector object. If a specific consumer is provided, include it in the selector.
-    const baseSelector: Partial<ConsumerVersionSelector> = consumer
-        ? { consumer }
-        : {}
+  // Create the base selector object. If a specific consumer is provided, include it in the selector.
+  const baseSelector: Partial<ConsumerVersionSelector> = consumer
+    ? { consumer }
+    : {}
 
-    // If 'includeMainAndDeployed' is true (default case), include selectors for:
-    // - All branches of the consumer (branch: '*')
-    // - The main branch of the consumer (mainBranch: true)
-    // - Deployed or released versions of the consumer (deployedOrReleased: true)
-    if (includeMainAndDeployed) {
-        return [
-            { ...baseSelector, branch: '*' }, // Includes all feature branches of the consumer
-            { ...baseSelector, mainBranch: true }, // Includes the main branch of the consumer
-            { ...baseSelector, deployedOrReleased: true } // Includes deployed or released consumer versions
-        ]
-    } else {
-        // If 'includeMainAndDeployed' is false, restrict the verification to the matching branch,
-        // which matches the provider's branch. This is useful when working with feature branches
-        // where both consumer and provider are working on the same feature.
-        return [{ ...baseSelector, matchingBranch: true }]
-    }
+  // If 'includeMainAndDeployed' is true (default case), include selectors for:
+  // - All branches of the consumer (branch: '*')
+  // - The main branch of the consumer (mainBranch: true)
+  // - Deployed or released versions of the consumer (deployedOrReleased: true)
+  if (includeMainAndDeployed) {
+    return [
+      { ...baseSelector, branch: '*' }, // Includes all feature branches of the consumer
+      { ...baseSelector, mainBranch: true }, // Includes the main branch of the consumer
+      { ...baseSelector, deployedOrReleased: true } // Includes deployed or released consumer versions
+    ]
+  } else {
+    // If 'includeMainAndDeployed' is false, restrict the verification to the matching branch,
+    // which matches the provider's branch. This is useful when working with feature branches
+    // where both consumer and provider are working on the same feature.
+    return [{ ...baseSelector, matchingBranch: true }]
+  }
 }

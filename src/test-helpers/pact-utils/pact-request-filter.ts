@@ -14,15 +14,15 @@ without persisting them in Pact files.
 
 // generic HttpRequest structure to accommodate both Express and non-Express environments
 type HttpRequest = {
-    headers: Record<string, string | string[] | undefined>
-    body?: unknown
+  headers: Record<string, string | string[] | undefined>
+  body?: unknown
 }
 
 type NextFunction = () => void | undefined
 
 // allows customization of token generation logic
 type RequestFilterOptions = {
-    tokenGenerator?: () => string
+  tokenGenerator?: () => string
 }
 
 /**
@@ -32,16 +32,16 @@ type RequestFilterOptions = {
  * @param {NextFunction} next - The Express-style `next()` function, if available.
  * @returns {HttpRequest | undefined} - The modified request or undefined if `next()` was called. */
 const handleExpressEnv = (
-    req: HttpRequest,
-    next: NextFunction
+  req: HttpRequest,
+  next: NextFunction
 ): HttpRequest | undefined => {
-    // If this is an Express environment, call next()
-    if (next && typeof next === 'function') {
-        next()
-    } else {
-        // In a non-Express environment, return the modified request
-        return req
-    }
+  // If this is an Express environment, call next()
+  if (next && typeof next === 'function') {
+    next()
+  } else {
+    // In a non-Express environment, return the modified request
+    return req
+  }
 }
 
 /**
@@ -52,25 +52,25 @@ const handleExpressEnv = (
  * @param {RequestFilterOptions} [options] - Options to customize the token generation logic.
  * @returns {ProxyOptions['requestFilter']} - A request filter that adds Authorization header. */
 const createRequestFilter =
-    (options?: RequestFilterOptions): ProxyOptions['requestFilter'] =>
-        (req, _, next) => {
-            const defaultTokenGenerator = () => new Date().toISOString()
-            const tokenGenerator = options?.tokenGenerator || defaultTokenGenerator
+  (options?: RequestFilterOptions): ProxyOptions['requestFilter'] =>
+  (req, _, next) => {
+    const defaultTokenGenerator = () => new Date().toISOString()
+    const tokenGenerator = options?.tokenGenerator || defaultTokenGenerator
 
-            // add an authorization header if not present
-            if (!req.headers['Authorization']) {
-                req.headers['Authorization'] = `Bearer ${tokenGenerator()}`
-            }
+    // add an authorization header if not present
+    if (!req.headers['Authorization']) {
+      req.headers['Authorization'] = `Bearer ${tokenGenerator()}`
+    }
 
-            return handleExpressEnv(req, next)
-        }
+    return handleExpressEnv(req, next)
+  }
 
 // if you have a token generator, pass it as an option
 // createRequestFilter({ tokenGenerator: myCustomTokenGenerator })
 export const requestFilter = createRequestFilter()
 
 export const noOpRequestFilter: ProxyOptions['requestFilter'] = (
-    req,
-    _,
-    next
+  req,
+  _,
+  next
 ) => handleExpressEnv(req, next)

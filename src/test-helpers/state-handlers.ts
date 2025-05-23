@@ -15,68 +15,68 @@ const movieAdapter = new MovieAdapter(prisma)
 const movieService = new MovieService(movieAdapter)
 
 export const stateHandlers: StateHandlers & MessageStateHandlers = {
-    'Has a movie with a specific ID': async (params: AnyJson) => {
-        const { id } = params as HasMovieWithSpecificIDParams
+  'Has a movie with a specific ID': async (params: AnyJson) => {
+    const { id } = params as HasMovieWithSpecificIDParams
 
-        // Check if the movie with the given id already exists
-        const res = await movieService.getMovieById(id)
+    // Check if the movie with the given id already exists
+    const res = await movieService.getMovieById(id)
 
-        if (res.status !== 200) {
-            // If the movie doesn't exist, create it
-            const movieData: Omit<Movie, 'id'> = {
-                name: `Movie Title ${Math.random().toString(36).substring(7)}`,
-                year: 2022,
-                rating: 7.5
-            }
-            console.log('MOVIE DATA:', movieData)
+    if (res.status !== 200) {
+      // If the movie doesn't exist, create it
+      const movieData: Omit<Movie, 'id'> = {
+        name: `Movie Title ${Math.random().toString(36).substring(7)}`,
+        year: 2022,
+        rating: 7.5
+      }
+      console.log('MOVIE DATA:', movieData)
 
-            await movieService.addMovie(movieData, id)
-            console.log(`Movie with ID ${id} successfully created.`)
-        } else {
-            console.log(`Movie with ID ${id} already exists, skipping creation.`)
-        }
-
-        return {
-            description: `Movie with ID ${id} is set up.`
-        }
-    },
-    'An existing movie exists': async (params: AnyJson) => {
-        const { name, year, rating } = params as ExistingMovieParams
-
-        // Check if the movie already exists by name
-        const res = await movieService.getMovieByName(name)
-
-        if (res.status !== 200) {
-            // Insert the movie if it doesn't exist
-            await movieService.addMovie({ name, year, rating })
-            console.log(`Movie with name "${name}" added.`)
-        } else {
-            console.log(
-                `Movie with name "${name}" already exists, skipping creation.`
-            )
-        }
-
-        return {
-            description: `Movie with name "${name}" is set up.`
-        }
-    },
-    // 'No movies exist': async () => {
-    //   console.log('Truncating tables...')
-    //   await truncateTables()
-    // },
-
-    // @ts-expect-error: https://github.com/pact-foundation/pact-js/issues/1164
-    'No movies exist': {
-        setup: async () => {
-            console.log('Truncating tables...')
-            await truncateTables()
-        },
-        teardown: async () => {
-            console.log('Teardown of state No movies exist ran...')
-            // Logic to restore default movies or clean up further can go here.
-            // If you're using fixtures or need to reset the database, handle that here.
-        }
+      await movieService.addMovie(movieData, id)
+      console.log(`Movie with ID ${id} successfully created.`)
+    } else {
+      console.log(`Movie with ID ${id} already exists, skipping creation.`)
     }
+
+    return {
+      description: `Movie with ID ${id} is set up.`
+    }
+  },
+  'An existing movie exists': async (params: AnyJson) => {
+    const { name, year, rating } = params as ExistingMovieParams
+
+    // Check if the movie already exists by name
+    const res = await movieService.getMovieByName(name)
+
+    if (res.status !== 200) {
+      // Insert the movie if it doesn't exist
+      await movieService.addMovie({ name, year, rating })
+      console.log(`Movie with name "${name}" added.`)
+    } else {
+      console.log(
+        `Movie with name "${name}" already exists, skipping creation.`
+      )
+    }
+
+    return {
+      description: `Movie with name "${name}" is set up.`
+    }
+  },
+  // 'No movies exist': async () => {
+  //   console.log('Truncating tables...')
+  //   await truncateTables()
+  // },
+
+  // @ts-expect-error: https://github.com/pact-foundation/pact-js/issues/1164
+  'No movies exist': {
+    setup: async () => {
+      console.log('Truncating tables...')
+      await truncateTables()
+    },
+    teardown: async () => {
+      console.log('Teardown of state No movies exist ran...')
+      // Logic to restore default movies or clean up further can go here.
+      // If you're using fixtures or need to reset the database, handle that here.
+    }
+  }
 }
 
 /*

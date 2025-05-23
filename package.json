@@ -11,7 +11,7 @@
     "db:migrate": "npx prisma migrate reset --force --skip-seed generate",
     "db:sync": "npx prisma db push --force-reset && npx prisma generate",
     "reset:db": "tsx ./scripts/global-setup.ts",
-    "start": ". ./scripts/env-setup.sh && npm run db:sync && npm run reset:db && nodemon",
+    "start": ". ./scripts/env-setup.sh && npm run db:sync && npm run reset:db && npm run kafka:reset-logs && nodemon",
     "prettier": "prettier --ignore-path .gitignore \"**/*.+(js|ts|json)\"",
     "fix:format": "npm run prettier -- --write",
     "validate": "npm-run-all --parallel typecheck lint test fix:format",
@@ -25,10 +25,12 @@
     "test:provider": ". ./scripts/env-setup.sh && jest --config jest-pact.config.ts --runInBand",
     "test:provider-ci": ". ./scripts/env-setup.sh && start-server-and-test start http://localhost:${PORT} test:provider",
     "can:i:deploy:provider": ". ./scripts/can-i-deploy-provider.sh",
-    "record:provider:deployment": ". ./scripts/record-provider-deployment.sh"
+    "record:provider:deployment": ". ./scripts/record-provider-deployment.sh",
+    "kafka:reset-logs": "rm -rf cypress/movie-events.log",
+    "kafka:start": "docker compose -f ./src/events/kafka-cluster.yml up -d --no-recreate",
+    "kafka:stop": "docker compose -f ./src/events/kafka-cluster.yml down -v"
   },
   "devDependencies": {
-    "@useoptic/optic": "1.0.6",
     "@bahmutov/cy-api": "2.2.8",
     "@bahmutov/cypress-esbuild-preprocessor": "2.2.4",
     "@cypress/skip-test": "2.6.1",
@@ -42,6 +44,7 @@
     "@types/node": "22.15.17",
     "@typescript-eslint/eslint-plugin": "8.32.1",
     "@typescript-eslint/parser": "8.32.1",
+    "@useoptic/optic": "1.0.6",
     "cy-retryable-before": "1.0.3",
     "cy-spok": "1.6.2",
     "cypress": "14.3.3",
@@ -72,14 +75,15 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
-    "@prisma/client": "6.7.0",
     "@asteasolutions/zod-to-openapi": "7.3.0",
     "@pact-foundation/pact": "15.0.1",
     "@pact-foundation/pact-cli": "16.0.7",
-    "start-server-and-test": "2.0.11",
+    "@prisma/client": "6.7.0",
     "cors": "2.8.5",
     "express": "4.21.2",
+    "kafkajs": "^2.2.4",
     "prisma": "6.7.0",
+    "start-server-and-test": "2.0.11",
     "zod": "3.24.4"
   }
 }
