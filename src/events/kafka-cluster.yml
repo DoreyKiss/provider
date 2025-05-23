@@ -1,8 +1,6 @@
 # This docker-compose file can be used to start Kafka and its dependencies locally.
 # If Kafka is not running, movie CRUD operations will still work but the movie events will not be published.
 
-version: "3.8" # Version of Docker Compose file format
-
 services:
   kafka:
     image: confluentinc/cp-kafka:6.0.14 # Kafka Docker image
@@ -27,6 +25,7 @@ services:
 
   init-kafka:
     image: confluentinc/cp-kafka:6.0.14 # Kafka image, the same as the main Kafka broker
+    platform: linux/amd64 # Ensures compatibility with AMD64 architecture
     depends_on:
       - kafka # Will run after the Kafka broker is up and running
     entrypoint: ["/bin/sh", "-c"] # Defines the shell entry point for this container
@@ -47,6 +46,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest # Kafka UI tool for managing and viewing topics and brokers
+    platform: linux/amd64 # Ensures compatibility with AMD64 architecture
     ports:
       - 8085:8080 # Exposes the Kafka UI on port 8085 (localhost:8085 in the browser)
     environment:
