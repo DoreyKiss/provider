@@ -13,57 +13,57 @@ const PACT_ENABLE_PENDING = process.env.PACT_ENABLE_PENDING || 'false'
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'local'
 
 describe('Pact Verification', () => {
-    // 2) Setup the provider verifier options
-    const port = process.env.PORT || '3001'
-    const options = buildVerifierOptions({
-        provider: 'MoviesAPI',
-        consumer: 'WebConsumer', // with multiple pact test files, best to specify the consumer
-        includeMainAndDeployed: PACT_BREAKING_CHANGE !== 'true', // if it is a breaking change, set the env var
-        enablePending: PACT_ENABLE_PENDING === 'true',
-        // logLevel: 'debug',
-        port,
-        stateHandlers,
-        requestFilter,
-        beforeEach: async () => {
-            // console.log('I run before each test coming from the consumer...')
-            await truncateTables()
-            return Promise.resolve()
-        }
-        // afterEach: () => {
-        //   console.log('I run after each test coming from the consumer...')
-        //   return Promise.resolve()
-        // }
-    })
-    const verifier = new Verifier(options)
+  // 2) Setup the provider verifier options
+  const port = process.env.PORT || '3001'
+  const options = buildVerifierOptions({
+    provider: 'MoviesAPI',
+    consumer: 'WebConsumer', // with multiple pact test files, best to specify the consumer
+    includeMainAndDeployed: PACT_BREAKING_CHANGE !== 'true', // if it is a breaking change, set the env var
+    enablePending: PACT_ENABLE_PENDING === 'true',
+    // logLevel: 'debug',
+    port,
+    stateHandlers,
+    requestFilter,
+    beforeEach: async () => {
+      // console.log('I run before each test coming from the consumer...')
+      await truncateTables()
+      return Promise.resolve()
+    }
+    // afterEach: () => {
+    //   console.log('I run after each test coming from the consumer...')
+    //   return Promise.resolve()
+    // }
+  })
+  const verifier = new Verifier(options)
 
-    // our produceMovieEvent has some console.logs which we don't need during tests
-    // but you can comment these out if you want to see them.
-    beforeAll(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => { })
-        jest.spyOn(console, 'error').mockImplementation(() => { })
-    })
-    afterAll(() => {
-        jest.restoreAllMocks()
-    })
+  // our produceMovieEvent has some console.logs which we don't need during tests
+  // but you can comment these out if you want to see them.
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {})
+    jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+  afterAll(() => {
+    jest.restoreAllMocks()
+  })
 
-    it('should validate the expectations of movie-consumer', async () => {
-        // 3) Write & execute the provider contract test
-        try {
-            const output = await verifier.verifyProvider()
-            console.log('Pact Verification Complete!')
-            console.log('Result:', output)
-        } catch (error) {
-            console.error('Pact Verification Failed:', error)
+  it('should validate the expectations of movie-consumer', async () => {
+    // 3) Write & execute the provider contract test
+    try {
+      const output = await verifier.verifyProvider()
+      console.log('Pact Verification Complete!')
+      console.log('Result:', output)
+    } catch (error) {
+      console.error('Pact Verification Failed:', error)
 
-            if (PACT_BREAKING_CHANGE === 'true' && GITHUB_BRANCH === 'main') {
-                console.log(
-                    'Ignoring Pact verification failures due to breaking change on main branch.'
-                )
-            } else {
-                throw error // Re-throw the error to fail the test
-            }
-        }
-    })
+      if (PACT_BREAKING_CHANGE === 'true' && GITHUB_BRANCH === 'main') {
+        console.log(
+          'Ignoring Pact verification failures due to breaking change on main branch.'
+        )
+      } else {
+        throw error // Re-throw the error to fail the test
+      }
+    }
+  })
 })
 
 // Selective testing note: If you prefix your test command (e.g. npm t) with the following environment variables,
