@@ -7,14 +7,16 @@
   "license": "ISC",
   "scripts": {
     "cy:open-local": "cypress open --e2e --browser chrome --config-file cypress/config/local.config.ts",
-    "cy:run-local": "cypress run --e2e --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:run-local-base": "cypress run --e2e --browser chrome --config-file cypress/config/local.config.ts",
+    "cy:run-local": "npm run cy:run-local-base",
+    "cy:run-local-fast": "CYPRESS_NO_COMMAND_LOG=1 npm run cy:run-local-base -- --config video=false screenshot=false",
     "db:migrate": "npx prisma migrate reset --force --skip-seed generate",
     "db:sync": "npx prisma db push --force-reset && npx prisma generate",
     "reset:db": "tsx ./scripts/global-setup.ts",
     "start": ". ./scripts/env-setup.sh && npm run db:sync && npm run reset:db && npm run kafka:reset-logs && nodemon",
     "prettier": "prettier --ignore-path .gitignore \"**/*.+(js|ts|json)\"",
-    "fix:format": "npm run prettier -- --write",
-    "validate": "npm-run-all --parallel typecheck lint test fix:format",
+    "fix:format": "prettier --write '**/*.{js,ts,json}' --ignore-path .prettierignore",
+    "validate": "npm-run-all --parallel typecheck lint fix:format test",
     "test": "jest --detectOpenHandles --verbose --silent --config jest.config.ts",
     "test:watch": "jest --watch --config jest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.jest.json",
@@ -28,6 +30,8 @@
     "record:provider:deployment": ". ./scripts/record-provider-deployment.sh",
     "kafka:reset-logs": "rm -rf cypress/movie-events.log",
     "kafka:start": "docker compose -f ./src/events/kafka-cluster.yml up -d --no-recreate",
+    "record:provider:bidirectional:deployment": ". ./scripts/record-bidirectional-deployment.sh",
+    "publish:pact-openapi": ". ././scripts/publish-pact-openapi.sh",
     "kafka:stop": "docker compose -f ./src/events/kafka-cluster.yml down -v"
   },
   "devDependencies": {
