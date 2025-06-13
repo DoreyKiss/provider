@@ -18,23 +18,23 @@ import { CreateMovieSchema, UpdateMovieSchema } from './@types/schema'
 // it only cares that the object implements MovieRepository.
 
 /*
-   API (Driving Adapter - entry point)
-                   |
-                   v
-     +----------------------------+
-     |        MovieService        |
-     | (Application Core/Hexagon) |
-     +----------------------------+
-                   |
-                   v
-       MovieRepository (Port)
-                   |
-                   v
- MovieAdapter (Driven Adapter - 2ndary, interacts with outside)
-                   |
-                   v
-               Database
- */
+  API (Driving Adapter - entry point)
+                  |
+                  v
+    +----------------------------+
+    |        MovieService        |
+    | (Application Core/Hexagon) |
+    +----------------------------+
+                  |
+                  v
+      MovieRepository (Port)
+                  |
+                  v
+MovieAdapter (Driven Adapter - 2ndary, interacts with outside)
+                  |
+                  v
+              Database
+*/
 
 export class MovieService {
   constructor(private readonly movieRepository: MovieRepository) {
@@ -104,7 +104,7 @@ function validateSchema<T>(
     return { success: true, data: result.data }
   } else {
     const errorMessages = result.error.errors
-      .map((err) => err.message)
+      .map((err) => `${err.path.join('.')} - ${err.message}`)
       .join(', ')
     return { success: false, error: errorMessages }
   }

@@ -12,7 +12,7 @@ const PACT_BREAKING_CHANGE = process.env.PACT_BREAKING_CHANGE || 'false'
 const PACT_ENABLE_PENDING = process.env.PACT_ENABLE_PENDING || 'false'
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'local'
 
-describe('Pact Verification', () => {
+describe('Pact Verification Pact Classic', () => {
   // 2) Setup the provider verifier options
   const port = process.env.PORT || '3001'
   const options = buildVerifierOptions({
@@ -46,7 +46,7 @@ describe('Pact Verification', () => {
     jest.restoreAllMocks()
   })
 
-  it('should validate the expectations of movie-consumer', async () => {
+  it('should validate the expectations of WebConsumer', async () => {
     // 3) Write & execute the provider contract test
     try {
       const output = await verifier.verifyProvider()
@@ -74,13 +74,19 @@ describe('Pact Verification', () => {
 // PACT_PROVIDER_STATE:	   select all tests that contain this string in one of its providerState
 // PACT_PROVIDER_NO_STATE: set to TRUE to select all tests what don't have any providerState
 /*
+
 examples:
+
 PACT_DESCRIPTION="a request to get all movies" npm run test:provider
 PACT_DESCRIPTION="a request to get all movies" PACT_PROVIDER_STATE="An existing movie exists" npm run test:provider
+
 PACT_PROVIDER_STATE="Has a movie with a specific ID" npm run test:provider
 PACT_DESCRIPTION="a request to a specific movie" PACT_PROVIDER_STATE="Has a movie with a specific ID" npm run test:provider
+
 PACT_DESCRIPTION="a request to delete a movie that exists" PACT_PROVIDER_STATE="Has a movie with a specific ID" npm run test:provider
+
 PACT_PROVIDER_NO_STATE=true npm run test:provider
+
 # to relax the can:i:deploy and only check against matching branches
 PACT_BREAKING_CHANGE=true npm run test:provider
 */
