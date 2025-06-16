@@ -11,7 +11,6 @@ const PACT_BREAKING_CHANGE = process.env.PACT_BREAKING_CHANGE || 'false'
 const PACT_ENABLE_PENDING = process.env.PACT_ENABLE_PENDING || 'false'
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'local'
 
-// Have to disable the contract because of the limit of 2 contracts per trial account
 describe.skip('Pact Verification for Message queue', () => {
   const options = buildMessageVerifierOptions({
     provider: 'MoviesAPI-event-producer', // ensure unique provider name for message pacts
