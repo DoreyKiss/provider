@@ -89,6 +89,6 @@
     "kafkajs": "^2.2.4",
     "prisma": "6.7.0",
     "start-server-and-test": "2.0.11",
-    "zod": "3.24.4"
+    "zod": "4.1.13"
   }
 }
